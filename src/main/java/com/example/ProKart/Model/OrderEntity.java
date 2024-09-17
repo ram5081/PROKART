@@ -1,13 +1,14 @@
 package com.example.ProKart.Model;
 
-import com.example.ProKart.Model.Enum.Gender;
+import com.example.ProKart.Model.Enum.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.sql.results.graph.collection.internal.ListInitializerProducer;
 
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -15,29 +16,29 @@ import java.util.List;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
+
 @Entity
-public class Customer {
+public class OrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
-    String name;
+    String orderNo; //UUID
 
-    int age;
-
-    @Column(unique = true , nullable = false)
-    String email;
+    double totalValue;
 
     @Enumerated(EnumType.STRING)
-    Gender gender;
+    OrderStatus orderStatus;
 
     @CreationTimestamp
-    Date created;
+    Date orderedAt;
 
-    @OneToMany(mappedBy = "customer" , cascade = CascadeType.ALL)
-    //cascade will do deletion operation if customer is deleted it will also delete the corresponding orders.
-    List<OrderEntity> orders = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn // creates foreign key
+    Customer customer;
+
+    @ManyToMany(mappedBy = "orders")
+    List<Product> products = new ArrayList<>();
 
 
 }
